@@ -40,6 +40,8 @@ Compile the viewer
 >./Run ../../models/simpleTest/confreplay3d.txt
 
 Compiling in Windows with Visual Studio 2015
+The binary dependencies can be downloaded on Github in Releases.
+Download libs.zip, extract the content and place under root project directory.
 run CMake and open the solution files.
 Compile the main example program by pointing Cmake to the CMakeLists.txt file in runLinux.
 Compile the viewer in runViewer.
