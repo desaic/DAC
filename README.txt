@@ -39,6 +39,11 @@ Compile the viewer
 >cmake ../ -DCMAKE_BUILD_TYPE=Release
 >./Run ../../models/simpleTest/confreplay3d.txt
 
+Compiling in Windows with Visual Studio 2015
+run CMake and open the solution files.
+Compile the main example program by pointing Cmake to the CMakeLists.txt file in runLinux.
+Compile the viewer in runViewer.
+
 Press ']' to start simulation
 'p' to pause
 '[' to single step
