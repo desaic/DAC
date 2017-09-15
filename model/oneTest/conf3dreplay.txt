@@ -1,0 +1,28 @@
+dim 3
+mode 0
+materialfile material3d.txt
+damp_alpha 0
+damp_beta 2.552e-4
+meshfile list 1
+3dcube.txt
+fixbottom false
+handle_contact false
+contactmodel 1
+specialvert true
+speciallb 0.006
+dt 0.0001
+dtcontact 0.00005
+nSteps 10000
+terminateOnCollision true
+force_draw_scale 1e-2
+addgravity true
+savepos false
+resultdir 0
+force list 3
+0
+0
+0
+forcedist 0.05
+saveObj false
+objDir obj-bbi
+skipframe 1

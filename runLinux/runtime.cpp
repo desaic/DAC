@@ -23,99 +23,20 @@
 #include <fstream>
 #include <iomanip>
 
-extern void makeSphere();
-void assignBarMat(ElementMesh * em, Eigen::Vector3d center);
-
 Logger * logger = 0;
-
-void genFEMMesh()
-{
-  //ElementRegGrid grid(10, 10, 1);
-  //scaleMesh(&grid, 0.1);
-  //std::vector<Element*>e;
-  //for (int i = 0; i < 10; i++){
-  //  e.push_back(grid.e[i]);
-  //}
-  //for (int i = 1; i < 10; i++){
-  //  e.push_back(grid.e[10 * i]);
-  //}
-  //for (int i = 1; i < 10; i++){
-  //  e.push_back(grid.e[9 + 10 * i]);
-  //}
-  //grid.e = e;
-  //grid.rmEmptyVert();
-  //std::ofstream out("L10.txt");
-  //grid.saveMesh(out);
-  //out.close();
-
-  //ElementRegGrid grid(1, 1, 1);
-  //scaleMesh(&grid, 0.1);
-  //std::ofstream out("cube.txt");
-  //grid.saveMesh(out);
-  //out.close();
-
-  //ElementRegGrid grid(1, 6, 1);
-  //scaleMesh(&grid, 0.1);
-  //std::vector<Element*>e;
-  //e.push_back(grid.e[0]);
-  //e.push_back(grid.e[2]);
-  ////e.push_back(grid.e[4]);
-  //grid.e = e;
-  //grid.rmEmptyVert();
-  //std::ofstream out("2cube.txt");
-  //grid.saveMesh(out);
-  //out.close();
-
-  //ElementRegGrid grid(2, 3, 1);
-  //scaleMesh(&grid, 0.1);
-  //std::vector<Element*>e;
-  //e.push_back(grid.e[0]);
-  //e.push_back(grid.e[1]);
-  //e.push_back(grid.e[2]);
-  //e.push_back(grid.e[3]);
-  //e.push_back(grid.e[5]);
-
-  //grid.e = e;
-  //grid.rmEmptyVert();
-  //std::ofstream out("c2x3.txt");
-  //grid.saveMesh(out);
-  //out.close();
-
-  ElementRegGrid grid(4, 4, 4);
-  scaleMesh(&grid, 0.03);
-  std::ofstream out("cube4.txt");
-  grid.saveMesh(out);
-  out.close();
-}
 
 int main(int argc, char* argv[])
 {
   std::string a1;
 
-  if (argc > 1){
+  if (argc < 2) {
+	  return 0;
+  }else {
     a1 = argv[1];
   }
-  //genFEMMesh();
-  //return 0;
-
-  //convert .bin microstructures to fem.txt for simulation.
-  if (a1 == "1"){
-    std::string inname = "tmp.bin";
-    std::string outname = "fem.txt";
-    if (argc > 2){
-      inname = argv[2];
-    }
-    if (argc > 3){
-      outname = argv[3];
-    }
-    voxel2em(inname, outname);
-    return 0;
-  }
-  else if (a1 == "2"){  
-    makeSphere();
-    return 0;
-  }
-  else if (a1 == "3"){
+  
+  if (a1 == "3"){
+	//converts an .txt fem mesh to 2 obj surface meshes.
     ElementMesh * em = new ElementMesh();
     std::string inname = "in.txt";
     if (argc > 2){
@@ -130,6 +51,8 @@ int main(int argc, char* argv[])
     return 0;
   }
   else if (a1 == "4"){
+	//subdivide an fem mesh uniformly.
+	//also saves a surf mesh for preview.
     ElementMesh * em = new ElementMesh();
     std::string inname = "in.txt";
     if (argc > 2){
@@ -148,28 +71,29 @@ int main(int argc, char* argv[])
     return 0;
   }
   else if (a1 == "5"){
-    //test mccd
-    CCDTrigMesh ccd;
-    TrigMesh tm[2];
-    logger = new Logger("ccdlog.txt");
-      for (int i = 0; i < 2; i++) {
-        std::string filename(argv[i + 2]);
-        std::ifstream in(filename);
-        if (!in.good()) {
-          std::cout << "Can't open " << filename << "\n";
-          return -1;
-        }
-        tm[i].load(in);
-        in.close();
-      }
-      ccd.init((double *)tm[0].v.data(), tm[0].v.size(), (int*)tm[0].t.data(), tm[0].t.size());
-      ccd.update((double *)tm[1].v.data(), tm[1].v.size());
-      for (size_t i = 0; i < ccd.mdl->vflist.size(); i++){
-        std::cout << ccd.mdl->vflist[i].f << " " << ccd.mdl->vflist[i].v << "\n";
-      }
+	//test mccd
+	CCDTrigMesh ccd;
+	TrigMesh tm[2];
+	logger = new Logger("ccdlog.txt");
+	for (int i = 0; i < 2; i++) {
+		std::string filename(argv[i + 2]);
+		std::ifstream in(filename);
+		if (!in.good()) {
+			std::cout << "Can't open " << filename << "\n";
+			return -1;
+		}
+		tm[i].load(in);
+		in.close();
+	}
+	ccd.init((double *)tm[0].v.data(), tm[0].v.size(), (int*)tm[0].t.data(), tm[0].t.size());
+	ccd.update((double *)tm[1].v.data(), tm[1].v.size());
+	for (size_t i = 0; i < ccd.mdl->vflist.size(); i++) {
+		std::cout << ccd.mdl->vflist[i].f << " " << ccd.mdl->vflist[i].v << "\n";
+	}
   }
   else if (a1 == "6"){
-    //save mode meshes.
+    //save modal meshes.
+	//modal vectors are stored in "modefile".
     std::string conffile = argv[2];
     ConfigFile conf;
     int status = conf.load(conffile);
@@ -191,67 +115,6 @@ int main(int argc, char* argv[])
 
     std::string modefile = conf.dir + conf.getString("modefile");
     saveModalMeshes(em, modefile);
-    return 0;
-  }
-  else if (a1 == "7"){
-    //force-based sampling of a microstructure with non-linear materials.
-    std::string filename = "config.txt";
-    filename = argv[2];
-    ConfigFile conf;
-    int status = conf.load(filename);
-    if (status<0){
-      return -1;
-    }
-    SampleForces(conf);
-    return 0;
-  }
-  else if (a1 == "8"){
-    std::string filename = "config.txt";
-    filename = argv[2];
-    ConfigFile conf;
-    int status = conf.load(filename);
-    if (status<0){
-      return -1;
-    }
-    fitParams(conf);
-    return 0;
-  }
-  else if (a1 == "9"){
-    std::cout << "extract fine material combinations. "
-      <<"Assuming a rectangular grid with "
-      <<"dimensions specified in config.txt\n";
-    std::string filename = "config.txt";
-    filename = argv[2];
-    ConfigFile conf;
-    int status = conf.load(filename);
-    if (status<0){
-      return -1;
-    }
-    extractComb(conf);
-    return 0;
-  }
-  else if (a1 == "10"){
-    std::cout << "Simulate coarsened mesh\n";
-    std::string filename = "config.txt";
-    filename = argv[2];
-    ConfigFile conf;
-    int status = conf.load(filename);
-    if (status<0){
-      return -1;
-    }
-    World * world = new World();
-    std::vector<std::vector<double> > params;
-    std::string coarseMatFile = conf.dir + "/" + conf.getString("matParam");
-    params = loadArr2d<double>(coarseMatFile);
-    makeCoarseMats(params, world->materials);
-    status = loadScene(world, conf);
-    if (status<0){
-      return -1;
-    }
-    //saveStiffness(world->em_[0]);
-    Eigen::Vector3d center(0.008, 0.024, 0.008);
-    assignBarMat(world->em_[0], center);
-    world->loop();
     return 0;
   }
 
@@ -294,35 +157,4 @@ int main(int argc, char* argv[])
   }
 
   return 0;
-}
-
-void assignBarMat(ElementMesh * em, Eigen::Vector3d center)
-{
-  for (size_t i = 0; i < em->e.size(); i++){
-    Element * ele = em->e[i];
-    Eigen::Vector3d eCenter = Eigen::Vector3d::Zero();
-    for (int j = 0; j < ele->nV(); j++){
-      eCenter += em->X[ele->at(j)];
-    }
-    eCenter = (1.0 / ele->nV()) * eCenter;
-    Eigen::Vector3d disp = eCenter - center;
-    int pred1 = (disp[0] < -disp[2]);
-    int pred2 = (disp[0] > disp[2]);
-    int pred = pred1 + pred2 * 2;
-    switch (pred){
-    case 0:
-      em->me[i] = 1;
-      break;
-    case 1:
-      em->me[i] = 3;
-      break;
-    case 2:
-      em->me[i] = 2;
-      break;
-    case 3:
-    default:
-      em->me[i] = 0;
-      break;
-    }
-  }
 }

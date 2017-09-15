@@ -833,7 +833,7 @@ void solveFriction(Stepper::FrictionModel frictionModel,
 double dot(Eigen::SparseVector<double> & s, Eigen::VectorXd v){
   double sum = 0;
   Eigen::SparseVector<double>::InnerIterator it(s);
-  for (; it; it++){
+  for (; it; ++it){
     sum += it.value() * v[it.index()];
   }
   return sum;

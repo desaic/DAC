@@ -9,7 +9,6 @@
 #include "LinPardiso.hpp"
 #include "Quadrature.hpp"
 #include "StepperNewmark.hpp"
-#include "StepperBDF2.hpp"
 #include "StepperRigid.hpp"
 #include "StepperStatic.hpp"
 #include "StretchMesh.hpp"
@@ -210,9 +209,6 @@ int loadScene(World * world, const ConfigFile & conf)
       int val=0;
       conf.getInt("frictionModel", val);
       sn->frictionModel = (StepperNewmark::FrictionModel)val;
-    }else if(stepperTypes[ii] == "BDF2"){
-      StepperBDF2 * sb = new StepperBDF2();
-      stepper = sb;
     }else if(stepperTypes[ii] =="static"){
       StepperStatic * st = new StepperStatic();
       stepper = st;

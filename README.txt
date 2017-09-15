@@ -1,5 +1,9 @@
-# DesignDynamics
 Design Dynamics
+
+The code is a library mainly for FEM simulation with statics, dynamics and frictional contact.
+To demonstrate the usage of the library, an example executable project in runLinux is provided.
+A simple viewer that works together with the example executable is also provided in runViewer.
+The code is mostly used in Windows.
 
 Compile on OS x
 

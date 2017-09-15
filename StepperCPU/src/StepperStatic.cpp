@@ -6,7 +6,6 @@
 #include "ArrayUtil.hpp"
 #include "femError.hpp"
 #include "LinSolver.hpp"
-#include "LinICPCG.hpp"
 #include "LinPardiso.hpp"
 #include "NewtonMin.hpp"
 #include "Objective.hpp"

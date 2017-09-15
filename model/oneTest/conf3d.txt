@@ -1,0 +1,21 @@
+dim 3
+scene jumper
+materialfile material3d.txt
+damp_alpha 0.0
+damp_beta 2.552e-4
+meshfile 3dcube.txt
+fixbottom false
+handle_contact true
+contactmodel 1
+frictionModel 3
+stepper list 1
+newmark
+frameskip 1
+dt 1e-5
+dtcontact 1e-5
+nSteps 10000
+terminateOnCollision false
+addgravity true
+savepos true
+resultdir 0/
+
