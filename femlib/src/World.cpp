@@ -363,7 +363,7 @@ void World::loop()
 
   for (size_t i = 0; i < em->x.size(); i++){
     //em->x[i] = R1*R*em->x[i];
-    //em->x[i][1] += 0.03;
+    em->x[i][1] += 0.001;
     //em->v[i][1] = -1;
     //em->v[i][1] = -0.767;
     //em->v[i][1] = 0;
@@ -391,7 +391,7 @@ void World::loop()
   //}
 
   for (size_t i = 0; i < em->v.size(); i++){
-    //em->v[i][0] = 1;
+    em->v[i][1] = -1;
   }
 
   if (trigm.size()>0 && handle_contact){
@@ -438,12 +438,7 @@ void World::loop()
    
     stepper->h = contact_h;
     int dim = em->dim;
-    //if (stepperIdx == 2){
-    //  for (size_t i = 0; i < em->x.size(); i++){
-    //    if (em->X[i][0]<0.01)
-    //    em->lb[i][1] = -0.001;
-    //  }
-    //}
+
     for(int iter = 0; iter<stepper->nSteps; iter++){
       frameCnt++;
       std::cout<<"frame "<<frameCnt<<"\n";
@@ -460,38 +455,6 @@ void World::loop()
       cen = em->centerOfMass();
       Eigen::Vector3d L = em->angularMomentum(cen);
       std::cout << "L " << L[2] << "\n";
-      bool correctL = false;
-      if (correctL &&  (std::abs(L0[2])*0.999 - std::abs(L[2]) > 0 ) ){
-        Eigen::Vector3d p = em->linearMomentum();
-        double M = 0;
-        for (unsigned int i = 0; i < em->mass.size(); i++){
-          M += em->mass[i];
-        }
-
-        Eigen::Vector3d vl = (1.0 / M) * p;
-
-        for (size_t i = 0; i < em->v.size(); i++){
-          Eigen::Vector3d x = em->x[i] - cen;
-          if (x.squaredNorm() < 1e-20){
-            continue; 
-          }
-          x.normalize();
-          Eigen::Vector3d v = em->v[i];
-          //remove linear part.
-          v -= vl;
-          Eigen::Vector3d L_i = x.cross(v);
-          Eigen::Vector3d angularComp = L_i.cross(x);
-          v = v + ((L0[2] - L[2]) / L[2]) * angularComp;
-          //add back linear part.
-          v += vl;
-          em->v[i] = v;
-        }
-        L = em->angularMomentum(cen);
-        std::cout << "L after " << L[2] << "\n";
-        std::cout << ret << "\n";
-        p = em->linearMomentum();
-        std::cout << "p after " << p[1] << "\n";
-      }
 
       if(ret>0){
         if( stepper->simType != Stepper::SIM_DYNAMIC){
@@ -508,18 +471,6 @@ void World::loop()
       }
       //saveMeshState();
       //frameCnt++;
-      //if( (em->specialVert >= 0)
-      //  && (stage == SIM_LOADING)
-      //  && (stepper->simType == Stepper::SIM_DYNAMIC)
-      //  && (em->x[em->specialVert][1] <= em->lb[em->specialVert][1]) ){
-      //  stage = SIM_LAUNCHING;
-      //  std::cout<<"Loading collision at time "<<totalTime<<".\n";
-      //  for(unsigned int ii =0; ii<em->x.size(); ii++){
-      //    em->fe[ii] = Eigen::Vector3d::Zero();
-      //    em->v[ii]  = Eigen::Vector3d::Zero();
-      //  }
-      //  em->lb[em->specialVert][1] = 0;
-      //}
 
       bool hasCollision = false;
       if(handle_contact
@@ -533,7 +484,7 @@ void World::loop()
       }
 //      std::cout<<"Collision "<<hasCollision<<" "<<stage<<"\n";
       //add check min>some epsilon.
-      if (!hasCollision && stage == SIM_LAUNCHING && totalTime > 0.02){// && totalTime > 0.015){
+      if (!hasCollision && stage == SIM_LAUNCHING && totalTime > 0.02){
         stage = SIM_FLIGHT;
         stepper->h = flight_h;
         std::cout<<"Launch time "<<totalTime<<"\n";
