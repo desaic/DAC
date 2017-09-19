@@ -335,6 +335,15 @@ void ortho3(const Eigen::Vector3d & x,
   y.normalize();
 }
 
+void printVec(double * a, int len)
+{
+	for (int i = 0; i < len; i++) {
+		std::cout << a[i] << " ";
+		if (i % 3 == 2) {
+			std::cout << "\n";
+		}
+	}
+}
 
 int
 StepperNewmark::resolveCollision3D_old(std::vector<Contact> & collision)
@@ -466,12 +475,24 @@ StepperNewmark::resolveCollision3D_old(std::vector<Contact> & collision)
         //solve for vertex response
         if (c.m[0] == mi){
           int vi = c.v1;
-          (*solvers)[mi]->solve(N.block(offset, ci, x.size(), 1).data(), x, residual, iters);
-          Ntilde.block(offset, ci, x.size(), 1) = Eigen::Map<Eigen::VectorXd>(&(x[0]), x.size());
-          (*solvers)[mi]->solve(D[0].block(offset, ci, x.size(), 1).data(), x, residual, iters);
-          Dtilde[0].block(offset, ci, x.size(), 1) = Eigen::Map<Eigen::VectorXd>(&(x[0]), x.size());
-          (*solvers)[mi]->solve(D[1].block(offset, ci, x.size(), 1).data(), x, residual, iters);
-          Dtilde[1].block(offset, ci, x.size(), 1) = Eigen::Map<Eigen::VectorXd>(&(x[0]), x.size());
+		  (*solvers)[mi]->solve(N.block(offset, ci, x.size(), 1).data(), x, residual, iters);
+          Ntilde.block(offset, ci, x.size(), 1) = Eigen::Map<Eigen::VectorXd>(x.data(), x.size());
+
+		  std::cout << "V:\n";
+		  printVec(N.block(offset, ci, x.size(), 1).data(), x.size());
+		  std::cout << "V tilde:\n";
+		  printVec(x.data(), x.size());
+
+		  (*solvers)[mi]->solve(D[0].block(offset, ci, x.size(), 1).data(), x, residual, iters);
+          Dtilde[0].block(offset, ci, x.size(), 1) = Eigen::Map<Eigen::VectorXd>(x.data(), x.size());
+
+		  std::cout << "D:\n";
+		  printVec(D[0].block(offset, ci, x.size(), 1).data(), x.size());
+		  std::cout << "D tilde:\n";
+		  printVec(x.data(), x.size());
+
+		  (*solvers)[mi]->solve(D[1].block(offset, ci, x.size(), 1).data(), x, residual, iters);
+          Dtilde[1].block(offset, ci, x.size(), 1) = Eigen::Map<Eigen::VectorXd>(x.data(), x.size());
         }
       }
     }
@@ -540,7 +561,7 @@ StepperNewmark::resolveCollision3D_old(std::vector<Contact> & collision)
         double coulombCondition = x[0] * x[0] * mu * mu >= x[1] * x[1] + x[2] * x[2];
         if ((frictionModel == FINITE) && !coulombCondition){
           // 3. Else must be slide condition: solve w fixed point.
-          double lambda_i = 0;
+          double lambda_i = lambda[contacti];
           Eigen::Vector2d beta_i = Eigen::Vector2d::Zero();
           Eigen::Vector2d betaOld_i = beta_i;
           int max_iter = 100;
@@ -552,7 +573,7 @@ StepperNewmark::resolveCollision3D_old(std::vector<Contact> & collision)
             lambda_i = -(b(0) + n.dot(rf)) / A(0, 0);
 
             // beta_i = -T.transpose() * (vbar + Tcomp *beta_i + ncomp * lambda_i);
-            Eigen::Vector3d r = rf + ntilde* lambda_i;
+            Eigen::Vector3d r = ntilde* lambda_i;
             beta_i[0] = -b(1) - d1.dot(r);
             beta_i[1] = -b(2) - d2.dot(r);
             beta_i.normalize();
@@ -569,11 +590,15 @@ StepperNewmark::resolveCollision3D_old(std::vector<Contact> & collision)
         }
       }
       double norm1 = 0;
-      for (int ci = 0; ci < NC; ci++){
+	  std::cout << "beta:\n";
+	  for (int ci = 0; ci < NC; ci++){
         norm1 = std::max(norm1, fcscale*std::abs(lambda[ci] - lambda0[ci]));
         norm1 = std::max(norm1, fcscale*std::abs(beta[2 * ci] - beta0[2 * ci]));
         norm1 = std::max(norm1, fcscale*std::abs(beta[2 * ci + 1] - beta0[2 * ci + 1]));
+		std::cout << beta[2 * ci] << " ";
+		std::cout << beta[2 * ci+1] << " \n";
       }
+
       //std::cout << "newton gs iter " << newtonIter << " " << gsIter << "====\n";
       //std::cout << norm0 << " " << norm1 << "\n";
       beta0 = beta;
@@ -582,7 +607,7 @@ StepperNewmark::resolveCollision3D_old(std::vector<Contact> & collision)
       if (gsIter == 0){
         norm00 = norm1;
       }
-      if (gsIter>5 && norm1 < 1e-8){//gsIter>5 &&
+      if (gsIter>5 && norm1 < 1e-8){
         gsconverge = true;
         break;
       }
@@ -814,8 +839,8 @@ void solveFriction(Stepper::FrictionModel frictionModel,
 
         // beta_i = -T.transpose() * (vbar + Tcomp *beta_i + ncomp * lambda_i);
         Eigen::VectorXd r = rf + Ntilde.col(ci) * lambda_i;
-        beta_i(0) = -b(1) + Dsp[0][ci].dot(r);
-        beta_i(1) = -b(2) + Dsp[1][ci].dot(r);
+        beta_i(0) = -b(1) - Dsp[0][ci].dot(r);
+        beta_i(1) = -b(2) - Dsp[1][ci].dot(r);
 
         beta_i = mu * lambda_i * beta_i.normalized();
         if ((betaOld_i - beta_i).norm() < 1e-12){
