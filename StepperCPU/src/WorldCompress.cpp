@@ -1,6 +1,7 @@
 #include "WorldCompress.hpp"
 
 #include "ArrayUtil.hpp"
+#include "Element.hpp"
 #include "ElementMesh.hpp"
 #include "ElementMeshUtil.hpp"
 #include "FileUtil.hpp"
@@ -43,25 +44,64 @@ int loadCompressScene(WorldCompress * w, const ConfigFile & conf)
   for (unsigned int ii = 0; ii < w->em_->x.size(); ii++){
     //fix bottom 
     if (w->em_->X[ii][1] < min[1] + eps){
-      w->em_->fixedDof[dim * ii + 1] = 1;
+      w->em_->fixedDof[dim * ii ] = 1;
+	  w->em_->fixedDof[dim * ii + 1] = 1;
+	  w->em_->fixedDof[dim * ii + 2] = 1;
     }
+	if (w->em_->X[ii][0] < min[0] + eps) {
+		w->em_->fixedDof[dim * ii] = 1;
+	}
     //fix top
-    if (w->em_->X[ii][1] > max[1] - eps){
-      w->em_->fixedDof[dim * ii + 1] = 1;
-    }
+    //if (w->em_->X[ii][1] > max[1] - eps){
+    //  w->em_->fixedDof[dim * ii + 1] = 1;
+    //}
     //fix x+
-    if (w->em_->X[ii][0] > max[0] - eps){
-      w->em_->fixedDof[dim * ii + 0] = 1;
-    }
+    //if (w->em_->X[ii][0] > max[0] - eps){
+    //  w->em_->fixedDof[dim * ii + 0] = 1;
+    //}
     //fix middle slice along z direction.
     //if ( abs(w->em_->X[ii][2] - middle[2]) < eps){
     //  w->em_->fixedDof[dim * ii + 2] = 1;
     //}
     //fix z+
-    if ( w->em_->X[ii][2] > max[2] - eps){
-      w->em_->fixedDof[dim * ii + 2] = 1;
-    }
+    //if ( w->em_->X[ii][2] > max[2] - eps){
+    //  w->em_->fixedDof[dim * ii + 2] = 1;
+    //}
   }
+  float forcedist = 0.5;
+  float forceHeight = max[1];
+  ElementMesh * em = w->em_;
+  //can contain duplicates
+  std::vector<int> forceVertices;
+  std::vector<int> bottomVertices;
+  for (unsigned int ii = 0; ii<em->e.size(); ii++) {
+	  for (int jj = 0; jj<em->e[ii]->nV(); jj++) {
+		  int vi = em->e[ii]->at(jj);
+		  Eigen::Vector3d x = em->X[vi];
+		  if (forceHeight - x[1] < eleSize) {
+			  //std::cout << "force v " << vi << "\n";
+			  forceVertices.push_back(vi);
+		  }
+	  }
+  }
+  Eigen::Vector3d ff(0, 0, 0);
+
+  if (conf.hasOpt("force")) {
+	  std::vector<float> confForce = conf.getFloatVector("force");
+	  if (confForce.size() != 3) {
+		  std::cout << "Wrong force dimension in config file\n";
+	  }
+	  for (int ii = 0; ii<3; ii++) {
+		  ff[ii] = confForce[ii];
+	  }
+  }
+
+  float forceScale = 1.0f / forceVertices.size();
+  for (unsigned int ii = 0; ii<forceVertices.size(); ii++) {
+	  int vi = forceVertices[ii];
+	  em->fe[vi] += forceScale * ff;
+  }
+
 
   conf.getInt("compressSteps", w->compressSteps);
   conf.getFloat("compress", w->compressRatio);
@@ -132,24 +172,20 @@ void WorldCompress::loop()
   stepper->m = em_;
   saveMeshState();
   frameCnt++;
+  
   //std::ofstream outf("L.txt");
-  for (int cstep = 0; cstep < compressSteps; cstep++){
-    std::vector<float> scale(3, 1);
-    scale[1] = (1-(cstep+1)*compressRatio)/(1-cstep * compressRatio);
-    scaleMeshx(em_, scale);
-    stepper->init();
-    for (int iter = 0; iter < stepper->nSteps; iter++){
-      ret = stepper->stepWrapper();
-      if (ret != 0){
-        break;
-      }
-    }
-    if (savePos){
-      saveMeshState();
-    }
-    frameCnt++;
-
+  stepper->init();
+  for (int iter = 0; iter < stepper->nSteps; iter++) {
+	  ret = stepper->stepWrapper();
+	  if (ret != 0) {
+		  break;
+	  }
+	  if (savePos) {
+		  saveMeshState();
+	  }
+	  frameCnt++;
   }
+
   std::cout << "compression status " << ret;
 }
 

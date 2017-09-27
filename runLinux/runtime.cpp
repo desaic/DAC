@@ -25,6 +25,57 @@
 
 Logger * logger = 0;
 
+void voxel2D2em(std::string txt_in, std::string outfile )
+{
+	std::vector<double> s;
+	std::vector<int> inputSize;
+	std::vector<std::vector<int > > vox;
+	int voxSize[2];
+	FileUtilIn in(txt_in);
+	in.in >> voxSize[0] >> voxSize[1];
+	vox.resize(voxSize[0]);
+	for (int i = 0; i < voxSize[0]; i++) {
+		vox[i].resize(voxSize[1]);
+		for (int j = 0; j < voxSize[1]; j++) {
+			in.in >> vox[i][j];
+		}
+	}
+	in.close();
+	std::vector<int> gridSize (3,0);
+	gridSize[0] = voxSize[0];
+	gridSize[1] = voxSize[1];
+	gridSize[2] = 10;
+
+	float matThresh = 0.5f;
+	ElementRegGrid * em = new ElementRegGrid();
+	em->nx = gridSize[0];
+	em->ny = gridSize[1];
+	em->nz = gridSize[2];
+	em->allocate();
+	std::vector<Element*> newEle;
+	int idx = 0;
+	for (int i = 0; i < em->nx; i++) {
+		for (int j = 0; j < em->ny; j++) {
+			for (int k = 0; k < em->nz; k++) {
+				double mat = vox[j][i];
+				if (mat < matThresh) {
+					delete em->e[idx];
+				}
+				else {
+					newEle.push_back(em->e[idx]);
+				}
+				idx++;
+			}
+		}
+	}
+	em->e = newEle;
+	em->rmEmptyVert();
+	FileUtilOut out(outfile);
+	em->saveMesh(out.out);
+	out.close();
+	savePartObj(em, 0, "surf.obj");
+}
+
 int main(int argc, char* argv[])
 {
   std::string a1;
@@ -34,8 +85,19 @@ int main(int argc, char* argv[])
   }else {
     a1 = argv[1];
   }
-  
-  if (a1 == "3"){
+
+  if (a1 == "2") {
+	  std::string inname = "vox.txt";
+	  std::string outname = "fem.txt";
+	  if (argc > 2) {
+		  inname = argv[2];
+	  }
+	  if (argc > 3) {
+		  outname = argv[3];
+	  }
+	  voxel2D2em(inname, outname);
+	 return 0;
+  }else if (a1 == "3"){
 	//converts an .txt fem mesh to 2 obj surface meshes.
     ElementMesh * em = new ElementMesh();
     std::string inname = "in.txt";

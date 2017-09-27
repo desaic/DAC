@@ -506,6 +506,8 @@ StepperNewmark::resolveCollision3D_old(std::vector<Contact> & collision)
         //pk = sum N_jl + D_jb +b j!=k
         Contact c = collision[contacti];
         int vi = c.v1;
+		//vel in previous time step
+		Eigen::Vector3d vt = v0[vi];
         Eigen::Vector3d pbar = delta.segment<3>(dim*vi);
         for (int j = 0; j < lambda.rows(); j++){
           if (j == contacti){
@@ -572,10 +574,14 @@ StepperNewmark::resolveCollision3D_old(std::vector<Contact> & collision)
             Eigen::Vector3d rf = dtilde1 * beta_i[0] + dtilde2 * beta_i[1];
             lambda_i = -(b(0) + n.dot(rf)) / A(0, 0);
 
+			auto Afriction = A.block(1, 1, 2, 2);
+			Eigen::Vector2d bfriction(b[1],b[2]);
+			Eigen::Vector3d r = ntilde* lambda_i - 0.5*h*vt;
+			bfriction[0] += d1.dot(r);
+			bfriction[1] += d2.dot(r);
+			beta_i = -0.5 * Afriction.inverse()*bfriction;
             // beta_i = -T.transpose() * (vbar + Tcomp *beta_i + ncomp * lambda_i);
-            Eigen::Vector3d r = ntilde* lambda_i;
-            beta_i[0] = -b(1) - d1.dot(r);
-            beta_i[1] = -b(2) - d2.dot(r);
+          
             beta_i.normalize();
             beta_i *= mu * lambda_i;
             //std::cout << betaOld_i << " " << beta_i << " beta\n";
