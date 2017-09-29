@@ -596,13 +596,13 @@ StepperNewmark::resolveCollision3D_old(std::vector<Contact> & collision)
         }
       }
       double norm1 = 0;
-	  std::cout << "beta:\n";
+	  //std::cout << "beta:\n";
 	  for (int ci = 0; ci < NC; ci++){
         norm1 = std::max(norm1, fcscale*std::abs(lambda[ci] - lambda0[ci]));
         norm1 = std::max(norm1, fcscale*std::abs(beta[2 * ci] - beta0[2 * ci]));
         norm1 = std::max(norm1, fcscale*std::abs(beta[2 * ci + 1] - beta0[2 * ci + 1]));
-		std::cout << beta[2 * ci] << " ";
-		std::cout << beta[2 * ci+1] << " \n";
+		//std::cout << beta[2 * ci] << " ";
+		//std::cout << beta[2 * ci+1] << " \n";
       }
 
       //std::cout << "newton gs iter " << newtonIter << " " << gsIter << "====\n";
@@ -642,12 +642,12 @@ StepperNewmark::resolveCollision3D_old(std::vector<Contact> & collision)
       for (int ci = 0; ci < NC; ci++){
         for (int ii = 0; ii < nDofi; ii++){
           int vi = ii / 3;
-          //m->fc[vi][ii % 3] += fcscale * lambda[ci] * Ntilde(dim * voffset[mi] + ii, ci);
-          //m->fc[vi][ii % 3] += fcscale * beta[2 * ci] * Dtilde[0](dim * voffset[mi] + ii, ci);
-          //m->fc[vi][ii % 3] += fcscale * beta[2 * ci + 1] * Dtilde[1](dim * voffset[mi] + ii, ci);
-          m->fc[vi][ii % 3] += fcscale * lambda[ci] * N(dim * voffset[mi] + ii, ci);
-          m->fc[vi][ii % 3] += fcscale * beta[2 * ci] * D[0](dim * voffset[mi] + ii, ci);
-          m->fc[vi][ii % 3] += fcscale * beta[2 * ci + 1] * D[1](dim * voffset[mi] + ii, ci);
+          m->fc[vi][ii % 3] += fcscale * lambda[ci] * Ntilde(dim * voffset[mi] + ii, ci);
+          m->fc[vi][ii % 3] += fcscale * beta[2 * ci] * Dtilde[0](dim * voffset[mi] + ii, ci);
+          m->fc[vi][ii % 3] += fcscale * beta[2 * ci + 1] * Dtilde[1](dim * voffset[mi] + ii, ci);
+          //m->fc[vi][ii % 3] += fcscale * lambda[ci] * N(dim * voffset[mi] + ii, ci);
+          //m->fc[vi][ii % 3] += fcscale * beta[2 * ci] * D[0](dim * voffset[mi] + ii, ci);
+          //m->fc[vi][ii % 3] += fcscale * beta[2 * ci + 1] * D[1](dim * voffset[mi] + ii, ci);
         }
       }
       x0 = x0s[mi];
