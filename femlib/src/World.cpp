@@ -391,7 +391,7 @@ void World::loop()
   //}
 
   for (size_t i = 0; i < em->v.size(); i++){
-    em->v[i][1] = -1;
+    em->v[i][0] = 1;
   }
 
   if (trigm.size()>0 && handle_contact){

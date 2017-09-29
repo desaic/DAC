@@ -478,18 +478,18 @@ StepperNewmark::resolveCollision3D_old(std::vector<Contact> & collision)
 		  (*solvers)[mi]->solve(N.block(offset, ci, x.size(), 1).data(), x, residual, iters);
           Ntilde.block(offset, ci, x.size(), 1) = Eigen::Map<Eigen::VectorXd>(x.data(), x.size());
 
-		  std::cout << "V:\n";
-		  printVec(N.block(offset, ci, x.size(), 1).data(), x.size());
-		  std::cout << "V tilde:\n";
-		  printVec(x.data(), x.size());
+		  //std::cout << "V:\n";
+		  //printVec(N.block(offset, ci, x.size(), 1).data(), x.size());
+		  //std::cout << "V tilde:\n";
+		  //printVec(x.data(), x.size());
 
 		  (*solvers)[mi]->solve(D[0].block(offset, ci, x.size(), 1).data(), x, residual, iters);
           Dtilde[0].block(offset, ci, x.size(), 1) = Eigen::Map<Eigen::VectorXd>(x.data(), x.size());
 
-		  std::cout << "D:\n";
-		  printVec(D[0].block(offset, ci, x.size(), 1).data(), x.size());
-		  std::cout << "D tilde:\n";
-		  printVec(x.data(), x.size());
+		  //std::cout << "D:\n";
+		  //printVec(D[0].block(offset, ci, x.size(), 1).data(), x.size());
+		  //std::cout << "D tilde:\n";
+		  //printVec(x.data(), x.size());
 
 		  (*solvers)[mi]->solve(D[1].block(offset, ci, x.size(), 1).data(), x, residual, iters);
           Dtilde[1].block(offset, ci, x.size(), 1) = Eigen::Map<Eigen::VectorXd>(x.data(), x.size());

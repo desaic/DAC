@@ -9,13 +9,18 @@ handle_contact true
 contactmodel 1
 frictionModel 3
 stepper list 1
+#static 
 newmark
 frameskip 1
-dt 1e-5
-dtcontact 1e-5
+dt 1e-3
+dtcontact 1e-3
 nSteps 10000
 terminateOnCollision false
 addgravity true
 savepos true
 resultdir 0/
-
+force list 3
+0
+0
+0
+frameskip 10
