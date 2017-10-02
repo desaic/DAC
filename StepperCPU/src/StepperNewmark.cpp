@@ -589,7 +589,6 @@ StepperNewmark::resolveCollision3D_old(std::vector<Contact> & collision)
               break;
             }
           }
-
          lambda[contacti] = lambda_i;
          beta[2 * contacti] = beta_i(0);
          beta[2 * contacti + 1] = beta_i(1);

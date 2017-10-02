@@ -23,6 +23,6 @@ force list 3
 0
 0
 forcedist 0.05
-saveObj false
-objDir obj-bbi
+saveObj true
+objDir obj
 skipframe 1

@@ -250,7 +250,6 @@ bool detectCollision(ElementMesh * m,World * world,
       contact.push_back(c);
       std::cout << "contact alpha " << c.alpha[0] << " " << c.alpha[1] << "\n";
       std::cout << "contact N " << c.normal[0] << " " << c.normal[1] << " "<<c.normal[2] << "\n";
-      contact.push_back(c);
     }
   }
 

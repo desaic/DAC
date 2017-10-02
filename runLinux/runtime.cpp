@@ -139,19 +139,23 @@ int main(int argc, char* argv[])
 	logger = new Logger("ccdlog.txt");
 	for (int i = 0; i < 2; i++) {
 		std::string filename(argv[i + 2]);
-		std::ifstream in(filename);
-		if (!in.good()) {
-			std::cout << "Can't open " << filename << "\n";
-			return -1;
-		}
-		tm[i].load(in);
+		FileUtilIn in(filename);
+		if (!in.good()) { return - 1; }
+		tm[i].load(in.in);
 		in.close();
 	}
 	ccd.init((double *)tm[0].v.data(), tm[0].v.size(), (int*)tm[0].t.data(), tm[0].t.size());
 	ccd.update((double *)tm[1].v.data(), tm[1].v.size());
+	std::cout << "mccd test vertex-faces:\n";
 	for (size_t i = 0; i < ccd.mdl->vflist.size(); i++) {
 		std::cout << ccd.mdl->vflist[i].f << " " << ccd.mdl->vflist[i].v << "\n";
 	}
+	std::cout << "mccd test edge-edge:\n";
+	for (size_t i = 0; i < ccd.mdl->eelist.size(); i++) {
+		std::cout << ccd.mdl->eelist[i].e0[0] << " " << ccd.mdl->eelist[i].e0[1] <<
+			  " " << ccd.mdl->eelist[i].e1[0] << " " << ccd.mdl->eelist[i].e1[1] << "\n";
+	}
+	return 0;
   }
   else if (a1 == "6"){
     //save modal meshes.
