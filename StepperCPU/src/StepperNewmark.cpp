@@ -946,56 +946,102 @@ StepperNewmark::resolveCollision3D(std::vector<Contact> & collision)
     int offset = dim * voffset[mi];
     for (int ci = 0; ci < NC; ci++){
       Contact c = collision[ci];
-      //vertex response
-      if (c.m[0] == mi){
-        int vi = c.v1;
-        for (int d = 0; d < dim; d++){
-          int dof = offset + vi*dim + d;
-          N(dof, ci) = c.normal[d];
-          Nsp[ci].insert(dof) = c.normal[d];
-        }
-        for (int d = 0; d < dim; d++){
-          int dof = offset + vi*dim + d;
-          D[0](dof, ci) = c.d1[d];
-          Dsp[0][ci].insert(dof) = c.d1[d];
-        }
-        for (int d = 0; d < dim; d++){
-          int dof = offset + vi*dim + d;
-          D[1](dof, ci) = c.d2[d];
-          Dsp[1][ci].insert(dof) = c.d2[d];
-        }
-      }
-      //quad response
-      else if (c.m[1] == mi){
-        float W[4];
-        bilinearWeights(c.alpha, W);
-        //loop over 4 vertices of a quad
-        for (int j = 0; j < 4; j++){
-          int vi = c.v2[j];
-          Eigen::Vector3d normal = W[j] * c.normal;
-          for (int d = 0; d < dim; d++){
-            int dof = offset + vi*dim + d;
-            N(dof, ci) = -normal[d];
-            Nsp[ci].insert(dof) = -normal[d];
-          }
-        }
-        for (int j = 0; j < 4; j++){
-          int vi = c.v2[j];
-          for (int d = 0; d < dim; d++){
-            int dof = offset + vi*dim + d;
-            D[0](dof, ci) = -c.d1[d];
-            Dsp[0][ci].insert(dof) = -c.d1[d];
-          }
-        }
-        for (int j = 0; j < 4; j++){
-          int vi = c.v2[j];
-          for (int d = 0; d < dim; d++){
-            int dof = offset + vi*dim + d;
-            D[1](dof, ci) = -c.d2[d];
-            Dsp[1][ci].insert(dof) = -c.d2[d];
-          }
-        }
-      }
+	  if (c.v1 >= 0) {
+		//vertex face collision
+		//vertex response
+		if (c.m[0] == mi) {
+			int vi = c.v1;
+			for (int d = 0; d < dim; d++) {
+				int dof = offset + vi*dim + d;
+				N(dof, ci) = c.normal[d];
+				Nsp[ci].insert(dof) = c.normal[d];
+			}
+			for (int d = 0; d < dim; d++) {
+				int dof = offset + vi*dim + d;
+				D[0](dof, ci) = c.d1[d];
+				Dsp[0][ci].insert(dof) = c.d1[d];
+			}
+			for (int d = 0; d < dim; d++) {
+				int dof = offset + vi*dim + d;
+				D[1](dof, ci) = c.d2[d];
+				Dsp[1][ci].insert(dof) = c.d2[d];
+			}
+		}
+		//quad response
+		else if (c.m[1] == mi) {
+			float W[4];
+			bilinearWeights(c.alpha, W);
+			//loop over 4 vertices of a quad
+			for (int j = 0; j < 4; j++) {
+				int vi = c.v2[j];
+				Eigen::Vector3d normal = W[j] * c.normal;
+				for (int d = 0; d < dim; d++) {
+					int dof = offset + vi*dim + d;
+					N(dof, ci) = -normal[d];
+					Nsp[ci].insert(dof) = -normal[d];
+				}
+			}
+			for (int j = 0; j < 4; j++) {
+				int vi = c.v2[j];
+				for (int d = 0; d < dim; d++) {
+					int dof = offset + vi*dim + d;
+					D[0](dof, ci) = -c.d1[d];
+					Dsp[0][ci].insert(dof) = -c.d1[d];
+				}
+			}
+			for (int j = 0; j < 4; j++) {
+				int vi = c.v2[j];
+				for (int d = 0; d < dim; d++) {
+					int dof = offset + vi*dim + d;
+					D[1](dof, ci) = -c.d2[d];
+					Dsp[1][ci].insert(dof) = -c.d2[d];
+				}
+			}
+		}
+	  } else if (c.e1[0] >= 0) {
+		  //edge edge collision.
+		  if (c.m[0] == mi) {
+			  for (int j = 0; j < 2; j++) {
+				  int vi = c.e1[j];
+				  for (int d = 0; d < dim; d++) {
+					  int dof = offset + vi*dim + d;
+					  N(dof, ci) = c.normal[d];
+					  Nsp[ci].insert(dof) = c.normal[d];
+				  }
+				  for (int d = 0; d < dim; d++) {
+					  int dof = offset + vi*dim + d;
+					  D[0](dof, ci) = c.d1[d];
+					  Dsp[0][ci].insert(dof) = c.d1[d];
+				  }
+				  for (int d = 0; d < dim; d++) {
+					  int dof = offset + vi*dim + d;
+					  D[1](dof, ci) = c.d2[d];
+					  Dsp[1][ci].insert(dof) = c.d2[d];
+				  }
+			  }
+		  }
+		  //quad response
+		  else if (c.m[1] == mi) {
+			  for (int j = 0; j < 2; j++) {
+				  int vi = c.e2[j];
+				  for (int d = 0; d < dim; d++) {
+					  int dof = offset + vi*dim + d;
+					  N(dof, ci) = c.normal[d];
+					  Nsp[ci].insert(dof) = c.normal[d];
+				  }
+				  for (int d = 0; d < dim; d++) {
+					  int dof = offset + vi*dim + d;
+					  D[0](dof, ci) = c.d1[d];
+					  Dsp[0][ci].insert(dof) = c.d1[d];
+				  }
+				  for (int d = 0; d < dim; d++) {
+					  int dof = offset + vi*dim + d;
+					  D[1](dof, ci) = c.d2[d];
+					  Dsp[1][ci].insert(dof) = c.d2[d];
+				  }
+			  }
+		  }
+	  }
     }
   }
 

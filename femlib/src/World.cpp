@@ -284,6 +284,13 @@ bool detectCollision(ElementMesh * m,World * world,
 
 		normal = (ex0[1] - ex0[0]).cross(ex1[1] - ex1[0]);
 		normal.normalize();
+		//normal points from edge 2 to edge 1.
+		//check normal direction.
+		Eigen::Vector3d rel0 = ex1[0] - (0.5*(ex0[0] + ex0[1]));
+		Eigen::Vector3d rel1 = ex1[1] - (0.5*(ex0[0] + ex0[1]));
+		if (normal.dot(rel0 + rel1) > 0) {
+			normal = -normal;
+		}
 		c.normal = normal;
 
 		Eigen::Vector3d a1 = (c.x - ex0[0]);
@@ -294,7 +301,7 @@ bool detectCollision(ElementMesh * m,World * world,
 		double l2 = a2.norm();
 		c.edge_alpha[1] = 1 - l2 / (ex1[1] - ex1[0]).norm();
 
-		contact.push_back(c);
+//		contact.push_back(c);
 		std::cout << "contact edge alpha " << c.edge_alpha[0] << " " << c.edge_alpha[1] << "\n";
 		std::cout << "contact N " << c.normal[0] << " " << c.normal[1] << " " << c.normal[2] << "\n";
 	}
