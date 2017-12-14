@@ -152,8 +152,8 @@ ElementMesh::getStiffnessDamping(Eigen::SparseMatrix<double> & D,
     timer.endWall();
     assembleTime += timer.getSecondsWall();
   }
-  std::cout << "local stiffness time " << localStiffTime << "\n";
-  std::cout << "assemble time " << assembleTime << "\n";
+  //std::cout << "local stiffness time " << localStiffTime << "\n";
+  //std::cout << "assemble time " << assembleTime << "\n";
   timer.startWall();
   int cnt = 0;
   for (unsigned int vi = 0; vi<x.size(); vi++){

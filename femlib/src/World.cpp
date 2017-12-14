@@ -203,7 +203,8 @@ bool detectCollision(ElementMesh * m,World * world,
     //self
     std::cout << "World.cpp detect self collision.\n";
     world->ccd.update((double*)(world->trigm[0]->v.data()), world->trigm[0]->v.size());
-    for (size_t i = 0; i < world->ccd.mdl->vflist.size(); i++){
+    
+	for (size_t i = 0; i < world->ccd.mdl->vflist.size(); i++){
       int fid = world->ccd.mdl->vflist[i].f;
       int vid = world->ccd.mdl->vflist[i].v;
       TrigMesh * tm = world->trigm[0];
@@ -251,6 +252,52 @@ bool detectCollision(ElementMesh * m,World * world,
       std::cout << "contact alpha " << c.alpha[0] << " " << c.alpha[1] << "\n";
       std::cout << "contact N " << c.normal[0] << " " << c.normal[1] << " "<<c.normal[2] << "\n";
     }
+
+	for (size_t i = 0; i < world->ccd.mdl->eelist.size(); i++) {
+		int *e0 = world->ccd.mdl->eelist[i].e0;
+		int *e1 = world->ccd.mdl->eelist[i].e1;
+		TrigMesh * tm = world->trigm[0];
+		ElementMesh * em = world->em_[0];
+		std::cout <<"edge edge "<< e0[0] << " " << e0[1]<<" " << e1[0] << " " << e1[1] << "\n";
+		Contact c;
+		c.m[0] = 0;
+		c.m[1] = 0;
+		c.x[0] = world->ccd.mdl->eelist[i].pos[0];
+		c.x[1] = world->ccd.mdl->eelist[i].pos[1];
+		c.x[2] = world->ccd.mdl->eelist[i].pos[2];
+
+		//vertex index in fem mesh.
+		
+		c.e1[0] = tm->vidx[e0[0]];
+		c.e1[1] = tm->vidx[e0[1]];
+		c.e2[0] = tm->vidx[e1[0]];
+		c.e2[1] = tm->vidx[e1[1]];
+
+		//edge vertices
+		Eigen::Vector3d ex0[2], ex1[2];
+		Eigen::Vector3d normal;
+
+		ex0[0] = x0[c.e1[0]];
+		ex0[1] = x0[c.e1[1]];
+		ex1[0] = x0[c.e2[0]];
+		ex1[1] = x0[c.e2[1]];
+
+		normal = (ex0[1] - ex0[0]).cross(ex1[1] - ex1[0]);
+		normal.normalize();
+		c.normal = normal;
+
+		Eigen::Vector3d a1 = (c.x - ex0[0]);
+		double l1 = a1.norm();
+		c.edge_alpha[0] = 1 - l1 / (ex0[1] - ex0[0]).norm();
+		
+		Eigen::Vector3d a2 = (c.x - ex1[0]);
+		double l2 = a2.norm();
+		c.edge_alpha[1] = 1 - l2 / (ex1[1] - ex1[0]).norm();
+
+		contact.push_back(c);
+		std::cout << "contact edge alpha " << c.edge_alpha[0] << " " << c.edge_alpha[1] << "\n";
+		std::cout << "contact N " << c.normal[0] << " " << c.normal[1] << " " << c.normal[2] << "\n";
+	}
   }
 
   if (contact.size()>0){
