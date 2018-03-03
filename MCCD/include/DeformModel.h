@@ -179,6 +179,7 @@ struct Contactvf{
 struct Contactee{
   int e0[2];
   int e1[2];
+  float pos[3];
   Contactee(){
     e0[0] = -1;
     e0[1] = -1;

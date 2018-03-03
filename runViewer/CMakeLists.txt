@@ -19,7 +19,7 @@ elseif(WIN32)
 	include_directories("${PROJECT_SOURCE_DIR}/../include/")
 	include_directories("${PROJECT_SOURCE_DIR}/../include/glfw")
 	include_directories("${PROJECT_SOURCE_DIR}/../include/FreeImage")
-	LINK_DIRECTORIES("$(ProjectDir)/../../libs")
+	LINK_DIRECTORIES("$(ProjectDir)/../libs")
 endif()
 
 add_subdirectory(../femlib       "${CMAKE_CURRENT_BINARY_DIR}/femlib")

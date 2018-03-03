@@ -197,6 +197,9 @@ DeformModel::do_ee(unsigned int e1, unsigned int e2)
     ee.e0[1] = v1;
     ee.e1[0] = w0;
     ee.e1[1] = w1;
+	ee.pos[0] = qi[0];
+	ee.pos[1] = qi[1];
+	ee.pos[2] = qi[2];
     eelist.push_back(ee);
 		_counts[omp_get_thread_num()]._num_ee_true++;
 	}
