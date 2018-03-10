@@ -72,38 +72,38 @@ DeformModel::do_orphans()
 	}
 }
 
-void
-DeformModel::load_orphans()
-{
-	vf_keeper.clear();
-	ee_keeper.clear();
-
-	int count_vf, count_ee;
-	FILE *fp = fopen("c:\\temp\\oset.dat", "rb");
-	fread(&count_vf, sizeof(int), 1, fp);
-	fread(&count_ee, sizeof(int), 1, fp);
-
-	for (int i=0; i<count_vf; i++) {
-		unsigned int fv[2];
-		fread(fv, sizeof(unsigned int), 2, fp);
-		vf_keeper.push_back(vf_pair(fv[0], fv[1]));
-	}
-
-	for (int i=0; i<count_ee; i++) {
-		unsigned int ee[2];
-		fread(ee, sizeof(unsigned int), 1, fp);
-		ee_keeper.push_back(ee_pair(ee[0], ee[1]));
-	}
-
-	fclose(fp);
-	printf("#orpahn_ee2 = %d\n", vf_keeper.size());
-	printf("#orpahn_vf2 = %d\n", ee_keeper.size());
-}
+//void
+//DeformModel::load_orphans()
+//{
+//	vf_keeper.clear();
+//	ee_keeper.clear();
+//
+//	int count_vf, count_ee;
+//	FILE *fp = fopen("D:\\temp\\oset.dat", "r");
+//	fread(&count_vf, sizeof(int), 1, fp);
+//	fread(&count_ee, sizeof(int), 1, fp);
+//
+//	for (int i=0; i<count_vf; i++) {
+//		unsigned int fv[2];
+//		fread(fv, sizeof(unsigned int), 2, fp);
+//		vf_keeper.push_back(vf_pair(fv[0], fv[1]));
+//	}
+//
+//	for (int i=0; i<count_ee; i++) {
+//		unsigned int ee[2];
+//		fread(ee, sizeof(unsigned int), 1, fp);
+//		ee_keeper.push_back(ee_pair(ee[0], ee[1]));
+//	}
+//
+//	fclose(fp);
+//	printf("#orpahn_ee2 = %d\n", vf_keeper.size());
+//	printf("#orpahn_vf2 = %d\n", ee_keeper.size());
+//}
 
 void
 DeformModel::get_orphans(adj_pair_list& adj_2_list, adj_pair_list& adj_1_list)
 {
-	TIMING_BEGIN
+	//TIMING_BEGIN
 
 	unsigned int id1, id2, st1, st2;
 	char status;
@@ -117,8 +117,8 @@ DeformModel::get_orphans(adj_pair_list& adj_2_list, adj_pair_list& adj_1_list)
 
 	sort(ee_keeper.begin(), ee_keeper.end());
 	ee_keeper.erase(unique(ee_keeper.begin(), ee_keeper.end()), ee_keeper.end());
-	printf("#orpahn_ee1 = %d\n", vf_keeper.size());
-	printf("#orpahn_vf1 = %d\n", ee_keeper.size());
+	//printf("#orpahn_ee1 = %d\n", vf_keeper.size());
+	//printf("#orpahn_vf1 = %d\n", ee_keeper.size());
 
 	for (vector<adjacent_pair>::iterator it=adj_2_list.begin(); it!=adj_2_list.end(); it++) {
 		(*it).get_param(id1, id2, st1, st2, status);
@@ -131,33 +131,37 @@ DeformModel::get_orphans(adj_pair_list& adj_2_list, adj_pair_list& adj_1_list)
 	sort(ee_keeper.begin(), ee_keeper.end());
 	ee_keeper.erase(unique(ee_keeper.begin(), ee_keeper.end()), ee_keeper.end());
 
-	printf("Orphan information:\n");
-	printf("#AVTP = %d\n", adj_1_list.size());
-	printf("#AETP = %d\n", adj_2_list.size());
-	printf("#orpahn_ee2 = %d\n", vf_keeper.size());
-	printf("#orpahn_vf2 = %d\n", ee_keeper.size());
-	TIMING_END("Get Orphans");
+	//printf("Orphan information:\n");
+	//printf("#AVTP = %d\n", adj_1_list.size());
+	//printf("#AETP = %d\n", adj_2_list.size());
+	//printf("#orpahn_ee2 = %d\n", vf_keeper.size());
+	//printf("#orpahn_vf2 = %d\n", ee_keeper.size());
+	//TIMING_END("Get Orphans");
 
-	{
-		FILE *fp = fopen("c:\\temp\\oset.dat", "wb");
-		int count_vf = vf_keeper.size(), count_ee = ee_keeper.size();
-		fwrite(&count_vf, sizeof(int), 1, fp);
-		fwrite(&count_ee, sizeof(int), 1, fp);
+	//{
 
-		for (int i=0; i<count_vf; i++) {
-			unsigned int fv[2];
-			vf_keeper[i].get_param(fv[0], fv[1]);
-			fwrite(fv, sizeof(unsigned int), 2, fp);
-		}
+	//	FILE *fp = fopen("D:\\temp\\oset.dat", "wb");
+	//	if (fp == NULL) {
+	//		return;
+	//	}
+	//	int count_vf = vf_keeper.size(), count_ee = ee_keeper.size();
+	//	fwrite(&count_vf, sizeof(int), 1, fp);
+	//	fwrite(&count_ee, sizeof(int), 1, fp);
 
-		for (int i=0; i<count_ee; i++) {
-			unsigned int ee[2];
-			ee_keeper[i].get_param(ee[0], ee[1]);
-			fwrite(ee, sizeof(unsigned int), 1, fp);
-		}
+	//	for (int i=0; i<count_vf; i++) {
+	//		unsigned int fv[2];
+	//		vf_keeper[i].get_param(fv[0], fv[1]);
+	//		fwrite(fv, sizeof(unsigned int), 2, fp);
+	//	}
 
-		fclose(fp);
-	}
+	//	for (int i=0; i<count_ee; i++) {
+	//		unsigned int ee[2];
+	//		ee_keeper[i].get_param(ee[0], ee[1]);
+	//		fwrite(ee, sizeof(unsigned int), 1, fp);
+	//	}
+
+	//	fclose(fp);
+	//}
 }
 
 bool

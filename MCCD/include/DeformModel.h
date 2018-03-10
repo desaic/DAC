@@ -379,7 +379,7 @@ public:
 	void test_feature_0(unsigned id1, unsigned int id2);
 
 	void do_orphans();
-	void load_orphans();
+	//void load_orphans();
 	void get_orphans(adj_pair_list& adj_2_list, adj_pair_list& adj_1_list);
 	void get_feature_1(unsigned int, unsigned int, unsigned int, unsigned int);
 	void get_feature_2(unsigned int, unsigned int, unsigned int, unsigned int);
