@@ -41,8 +41,8 @@
 // Author: Tang, Min tang_m@zju.edu.cn
 
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <gl/gl.h>
+//#include <windows.h>
+//#include <gl/gl.h>
 
 #include <math.h>
 #include <stdio.h>

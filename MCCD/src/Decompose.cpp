@@ -40,7 +40,7 @@
 
 // Author: Tang, Min tang_m@zju.edu.cn
 
-#include <windows.h>
+//#include <windows.h>
 
 #include <math.h>
 #include <stdio.h>

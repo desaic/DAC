@@ -24,5 +24,6 @@ void CCDTrigMesh::update(const double * verts, int nv)
   mdl->RebuildBVH(ccd);
   mdl->ResetCounter();
   mdl->SelfCollide(ccd);
-  //mdl->UpdateCollide();
+
+//  mdl->UpdateCollide();
 }

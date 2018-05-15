@@ -93,7 +93,7 @@ void dynamicModel_AABB(int t, int circle, bool refit, bool ccd)
 
 	mdl->SelfCollide(ccd);
 	
-  //mdl->UpdateCollide();
+  mdl->UpdateCollide();
 
 	tm.endTiming(0);
 

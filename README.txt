@@ -5,7 +5,7 @@ To demonstrate the usage of the library, an example executable project in runLin
 A simple viewer that works together with the example executable is also provided in runViewer.
 The code is mostly used in Windows.
 
-Compile on OS x
+Compile on OS x (Not well tested)
 
 Dependencies:
   Eigen3
